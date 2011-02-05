@@ -38,7 +38,9 @@ namespace QtSpeech_v1 { // API v1.0
 class QtSpeech::Private {
 public:
     Private()
-        :textScript(kCFStringEncodingMacRoman),onFinishSlot(0L) {}
+        :textScript(kCFStringEncodingMacRoman),
+          isWaitingInLoop(false),
+          onFinishSlot(0L) {}
 
     VoiceName name;
     SInt16 textScript;
@@ -48,9 +50,11 @@ public:
     typedef QPointer<QtSpeech> Ptr;
     static QList<Ptr> ptrs;
 
+    bool isWaitingInLoop;
+    QPointer<QEventLoop> waitEventLoop;
+
     const char * onFinishSlot;
     QPointer<QObject> onFinishObj;
-    void speechFinished();
     static void speechFinished(SpeechChannel, long refCon);
 };
 const QString QtSpeech::Private::VoiceId = QString("macosx:%1");
@@ -149,17 +153,35 @@ void QtSpeech::tell(QString text, QObject * obj, const char * slot) const
     if (ok != noErr) throw LogicError(Where+"SpeakCFString()");
 }
 
+void QtSpeech::say(QString text) const
+{
+    if (d->isWaitingInLoop)
+        throw LogicError(Where+"Already in process of saying something");
+
+    d->isWaitingInLoop = true;
+    tell(text);
+
+    QEventLoop el;
+    d->waitEventLoop = &el;
+    el.exec();
+}
+
 void QtSpeech::Private::speechFinished(SpeechChannel chan, long refCon)
 {
     Q_UNUSED(refCon);
     foreach(QtSpeech * c, ptrs) {
         if (c && c->d->channel == chan) {
+            c->finished();
             if (c->d->onFinishObj && c->d->onFinishSlot) {
-                c->finished();
                 disconnect(c, SIGNAL(finished()),
                            c->d->onFinishObj, c->d->onFinishSlot);
                 c->d->onFinishSlot = 0L;
                 c->d->onFinishObj = 0L;
+            }
+            if (c->d->isWaitingInLoop) {
+                c->d->isWaitingInLoop = false;
+                if (c->d->waitEventLoop)
+                    c->d->waitEventLoop->quit();
             }
             break;
         }

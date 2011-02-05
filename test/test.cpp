@@ -29,8 +29,12 @@ int main(int argc, char ** argv)
     QtSpeech speech;
 
     QString text = "Hello World!";
-    qDebug() << "About to say" << text << "using voice:" << speech.name().name;
 
+    qDebug() << "About to say synchrounously" << text << "using voice:" << speech.name().name;
+    speech.say(text);
+
+    qDebug() << "About to say asynchrounously" << text << "using voice:" << speech.name().name;
     speech.tell(text, &a, SLOT(quit()));
+
     return a.exec();
 }
