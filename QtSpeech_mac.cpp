@@ -53,6 +53,7 @@ public:
     bool isWaitingInLoop;
     QPointer<QEventLoop> waitEventLoop;
 
+    SpeechDoneUPP doneCall;
     const char * onFinishSlot;
     QPointer<QObject> onFinishObj;
     static void speechFinished(SpeechChannel, long refCon);
@@ -90,9 +91,10 @@ QtSpeech::QtSpeech(VoiceName n, QObject * parent)
         }
     }
 
+    d->doneCall = NewSpeechDoneUPP(&Private::speechFinished);
     SysCall( NewSpeechChannel(voice_ptr, &d->channel), InitError);
     SysCall( SetSpeechInfo(d->channel, soSpeechDoneCallBack,
-                           (void *)NewSpeechDoneUPP(&Private::speechFinished)), InitError);
+                           (void *)d->doneCall), InitError);
     d->name = n;
     d->ptrs << this;
 }
@@ -104,6 +106,7 @@ QtSpeech::~QtSpeech()
 
     SysCall( StopSpeech(d->channel), CloseError);
     SysCall( DisposeSpeechChannel(d->channel), CloseError);
+    DisposeSpeechDoneUPP(d->doneCall);
 
     d->ptrs.removeAll(this);
     delete d;
