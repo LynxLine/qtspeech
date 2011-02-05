@@ -21,11 +21,16 @@
 
 int main(int argc, char ** argv)
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+    //QPair<QString, QString> v;
+    //foreach(QtSpeech::VoiceName v, QtSpeech::voices())
+    //    qDebug() << "id:" << v.id << "name:" << v.name;
 
-    QPair<QString, QString> v;
-    foreach(QtSpeech::VoiceName v, QtSpeech::voices())
-        qDebug() << "id:" << v.id << "name:" << v.name;
-    return 0;
+    QCoreApplication a(argc, argv);
+    QtSpeech speech;
+
+    QString text = "Hello World!";
+    qDebug() << "About to say" << text << "using voice:" << speech.name().name;
+
+    speech.tell(text, &a, SLOT(quit()));
+    return a.exec();
 }
