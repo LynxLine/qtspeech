@@ -16,10 +16,16 @@
     Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301 USA */
 
-#ifndef QtSpeech_Header
+#include <QtCore>
+#include <QtSpeech>
 
-#include <QtSpeech.h>
-using namespace QtSpeech_v1;
+int main(int argc, char ** argv)
+{
+    Q_UNUSED(argc);
+    Q_UNUSED(argv);
 
-#endif // QtSpeech_Header
-
+    QPair<QString, QString> v;
+    foreach(QtSpeech::VoiceName v, QtSpeech::voices())
+        qDebug() << "id:" << v.id << "name:" << v.name;
+    return 0;
+}

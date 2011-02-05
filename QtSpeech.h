@@ -20,26 +20,28 @@
 #define QtSpeech_H
 
 #include <QObject>
-#include <QVariant>
 
-namespace QtSpeech_v1 {
+namespace QtSpeech_v1 { // API v1.0
 
 class QtSpeech : public QObject {
 Q_OBJECT
 public:
-    class Error {
-    public:
-        Error(QString s):msg(s) {}
-        QString msg;
-    };
+    // exceptions
+    struct Error { QString msg; Error(QString s):msg(s) {} };
+    struct InitError : Error { InitError(QString s):Error(s) {} };
+    struct LogicError : Error { LogicError(QString s):Error(s) {} };
+    struct CloseError : Error { CloseError(QString s):Error(s) {} };
 
-    class InitError : public Error { public: InitError(QString s):Error(s) {} };
-    class LogicError : public Error { public: LogicError(QString s):Error(s) {} };
-    class CloseError : public Error { public: CloseError(QString s):Error(s) {} };
+    // types
+    struct VoiceName { QString id; QString name; };
+    typedef QList<VoiceName> VoiceNames;
 
+    // api
     virtual ~QtSpeech() {}
 
+    static VoiceNames voices();
 };
 
-} // namespace QtSpeech_v1
+}; // namespace QtSpeech_v1
 #endif // QtSpeech_H
+

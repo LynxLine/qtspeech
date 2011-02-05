@@ -16,15 +16,11 @@
 # Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA 02110-1301 USA
 
-DEPENDPATH += $$PWD
-INCLUDEPATH += $$PWD
+TEMPLATE = app
+CONFIG += warn_on
+QT -= gui
 
-HEADERS += \
-    QtSpeech \
-    QtSpeech.h \
+include(../QtSpeech.pri)
 
-macx {
-    SOURCES += QtSpeech_mac.cpp
-    LIBS *= -framework AppKit
-}
+SOURCES += test.cpp
 
