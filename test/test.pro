@@ -18,6 +18,7 @@
 
 TEMPLATE = app
 CONFIG += warn_on
+CONFIG += console
 QT -= gui
 
 include(../QtSpeech.pri)

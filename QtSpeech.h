@@ -50,6 +50,9 @@ public:
 signals:
     void finished();
 
+protected:
+    virtual void timerEvent(QTimerEvent *);
+
 private:
     class Private;
     Private * d;

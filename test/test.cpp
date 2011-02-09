@@ -21,11 +21,10 @@
 
 int main(int argc, char ** argv)
 {
-    //QPair<QString, QString> v;
+    QCoreApplication a(argc, argv);
     //foreach(QtSpeech::VoiceName v, QtSpeech::voices())
     //    qDebug() << "id:" << v.id << "name:" << v.name;
-
-    QCoreApplication a(argc, argv);
+    
     QtSpeech speech;
 
     QString text = "Hello World!";
@@ -35,6 +34,5 @@ int main(int argc, char ** argv)
 
     qDebug() << "About to say asynchrounously" << text << "using voice:" << speech.name().name;
     speech.tell(text, &a, SLOT(quit()));
-
     return a.exec();
 }

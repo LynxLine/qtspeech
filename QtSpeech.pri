@@ -28,3 +28,12 @@ macx {
     LIBS *= -framework AppKit
 }
 
+win32 {
+    SOURCES += QtSpeech_win.cpp
+
+    INCLUDEPATH += "C:/Program Files/PSDK/Include"
+    INCLUDEPATH += "C:/Program Files/PSDK/Include/atl"
+    INCLUDEPATH += "C:/Program Files/Microsoft Speech SDK 5.1/Include"
+
+    LIBS += -L"C:/Program Files/Microsoft Speech SDK 5.1/Lib/i386"
+}
