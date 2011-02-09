@@ -191,4 +191,9 @@ void QtSpeech::Private::speechFinished(SpeechChannel chan, long refCon)
     }
 }
 
+void QtSpeech::timerEvent(QTimerEvent * te)
+{
+    QObject::timerEvent(te);
+}
+
 } // namespace QtSpeech_v1
