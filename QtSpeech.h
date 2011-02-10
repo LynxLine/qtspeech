@@ -37,6 +37,7 @@ public:
     typedef QList<VoiceName> VoiceNames;
 
     // api
+    QtSpeech(QObject * parent);
     QtSpeech(VoiceName n = VoiceName(), QObject * parent =0L);
     virtual ~QtSpeech();
 

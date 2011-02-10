@@ -68,6 +68,42 @@ const QString QtSpeech::Private::VoiceId = QString("macosx:%1");
 QList<QtSpeech::Private::Ptr> QtSpeech::Private::ptrs = QList<QtSpeech::Private::Ptr>();
 
 // implementation
+QtSpeech::QtSpeech(QObject * parent)
+    :QObject(parent), d(new Private)
+{
+    VoiceName n;
+    VoiceDescription info;
+    SysCall( GetVoiceDescription(NULL, &info, sizeof(VoiceDescription)), InitError);
+    n.name = QString::fromAscii((const char *)(info.name+1), int(info.name[0]));
+    n.id = d->VoiceId.arg(info.voice.id);
+
+    if (n.id.isEmpty())
+        throw InitError(Where+"No default voice in system");
+
+    SInt16 count;
+    VoiceSpec voice;
+    VoiceSpec * voice_ptr(0L);
+    SysCall( CountVoices(&count), InitError);
+    for (int i=1; i<= count; i++) {
+        SysCall( GetIndVoice(i, &voice), InitError);
+        QString id = d->VoiceId.arg(voice.id);
+        if (id == n.id) {
+            voice_ptr = &voice;
+            VoiceDescription info;
+            SysCall( GetVoiceDescription(&voice, &info, sizeof(VoiceDescription)), InitError);
+            d->textScript = info.script;
+            break;
+        }
+    }
+
+    d->doneCall = NewSpeechDoneUPP(&Private::speechFinished);
+    SysCall( NewSpeechChannel(voice_ptr, &d->channel), InitError);
+    SysCall( SetSpeechInfo(d->channel, soSpeechDoneCallBack,
+                           (void *)d->doneCall), InitError);
+    d->name = n;
+    d->ptrs << this;
+}
+
 QtSpeech::QtSpeech(VoiceName n, QObject * parent)
     :QObject(parent), d(new Private)
 {
