@@ -34,6 +34,12 @@ namespace QtSpeech_v1 { // API v1.0
     }\
 }
 
+#ifdef Q_OS_MAC64
+#define SpeechDoneUPP_ARG2 void *
+#else
+#define SpeechDoneUPP_ARG2 long
+#endif
+
 // internal data
 class QtSpeech::Private {
 public:
@@ -56,7 +62,7 @@ public:
     SpeechDoneUPP doneCall;
     const char * onFinishSlot;
     QPointer<QObject> onFinishObj;
-    static void speechFinished(SpeechChannel, long refCon);
+    static void speechFinished(SpeechChannel, SpeechDoneUPP_ARG2 refCon);
 };
 const QString QtSpeech::Private::VoiceId = QString("macosx:%1");
 QList<QtSpeech::Private::Ptr> QtSpeech::Private::ptrs = QList<QtSpeech::Private::Ptr>();
@@ -169,7 +175,7 @@ void QtSpeech::say(QString text) const
     el.exec();
 }
 
-void QtSpeech::Private::speechFinished(SpeechChannel chan, long refCon)
+void QtSpeech::Private::speechFinished(SpeechChannel chan, SpeechDoneUPP_ARG2 refCon)
 {
     Q_UNUSED(refCon);
     foreach(QtSpeech * c, ptrs) {
