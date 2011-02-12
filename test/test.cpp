@@ -22,8 +22,8 @@
 int main(int argc, char ** argv)
 {
     QCoreApplication a(argc, argv);
-    //foreach(QtSpeech::VoiceName v, QtSpeech::voices())
-    //    qDebug() << "id:" << v.id << "name:" << v.name;
+    foreach(QtSpeech::VoiceName v, QtSpeech::voices())
+        qDebug() << "id:" << v.id << "name:" << v.name;
     
     QtSpeech speech;
 
@@ -31,8 +31,9 @@ int main(int argc, char ** argv)
 
     qDebug() << "About to say synchrounously" << text << "using voice:" << speech.name().name;
     speech.say(text);
+    return 0;
 
-    qDebug() << "About to say asynchrounously" << text << "using voice:" << speech.name().name;
-    speech.tell(text, &a, SLOT(quit()));
-    return a.exec();
+    //qDebug() << "About to say asynchrounously" << text << "using voice:" << speech.name().name;
+    //speech.tell(text, &a, SLOT(quit()));
+    //return a.exec();
 }

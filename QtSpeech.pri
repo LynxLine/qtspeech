@@ -37,3 +37,17 @@ win32 {
 
     LIBS += -L"C:/Program Files/Microsoft Speech SDK 5.1/Lib/i386"
 }
+
+unix:!mac {
+    SOURCES += QtSpeech_unx.cpp
+
+    INCLUDEPATH += $$PWD/festival/speech_tools/include
+    INCLUDEPATH += $$PWD/festival/festival/src/include
+
+    LIBS += -lncurses
+    LIBS += -L$$PWD/festival/festival/src/lib -lFestival
+    LIBS += -L$$PWD/festival/speech_tools/lib -lestbase -lestools -leststring
+
+    # for testing on mac, replace it with your libs
+    LIBS += -framework CoreAudio -framework AudioUnit -framework AudioToolbox -framework Carbon
+}
