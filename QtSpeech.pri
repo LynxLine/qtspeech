@@ -46,8 +46,11 @@ unix:!mac {
 
     LIBS += -lncurses
     LIBS += -L$$PWD/festival/festival/src/lib -lFestival
-    LIBS += -L$$PWD/festival/speech_tools/lib -lestbase -lestools -leststring
+    LIBS += -L$$PWD/festival/speech_tools/lib -lestools -lestbase -leststring
 
-    # for testing on mac, replace it with your libs
-    LIBS += -framework CoreAudio -framework AudioUnit -framework AudioToolbox -framework Carbon
+    # Linux: use asound 
+    LIBS += -lasound
+    
+    # Mac: use system Frameworks
+    #LIBS += -framework CoreAudio -framework AudioUnit -framework AudioToolbox -framework Carbon
 }

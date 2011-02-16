@@ -48,6 +48,8 @@ public:
 
     const char * onFinishSlot;
     QPointer<QObject> onFinishObj;
+
+    QPointer<QThread> speechThread;
 };
 const QString QtSpeech::Private::VoiceId = QString("festival:%1");
 QList<QtSpeech::Private::Ptr> QtSpeech::Private::ptrs = QList<QtSpeech::Private::Ptr>();
