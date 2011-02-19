@@ -45,7 +45,6 @@ void QtSpeech_th::say(QString text) {
             init = true;
         }
         has_error = false;
-        qDebug() << "XXX" << text;
         EST_String est_text(text.toUtf8());
         SysCall(festival_say_text(est_text), QtSpeech::LogicError);
     }
