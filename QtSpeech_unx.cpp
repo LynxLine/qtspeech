@@ -18,6 +18,7 @@
 
 #include <QtCore>
 #include <QtSpeech>
+#include <QtSpeech_unx.h>
 #include <festival.h>
 
 namespace QtSpeech_v1 { // API v1.0
@@ -34,6 +35,27 @@ namespace QtSpeech_v1 { // API v1.0
     }\
 }
 
+// qobject for speech thread
+bool QtSpeech_th::init = false;
+void QtSpeech_th::say(QString text) {
+    try {
+        if (!init) {
+            int heap_size = FESTIVAL_HEAP_SIZE;
+            festival_initialize(true,heap_size);
+            init = true;
+        }
+        has_error = false;
+        qDebug() << "XXX" << text;
+        EST_String est_text(text.toUtf8());
+        SysCall(festival_say_text(est_text), QtSpeech::LogicError);
+    }
+    catch(QtSpeech::LogicError e) {
+        has_error = true;
+        err = e;
+    }
+    emit finished();
+}
+
 // internal data
 class QtSpeech::Private {
 public:
@@ -41,18 +63,14 @@ public:
         :onFinishSlot(0L) {}
 
     VoiceName name;
-
     static const QString VoiceId;
-    typedef QPointer<QtSpeech> Ptr;
-    static QList<Ptr> ptrs;
 
     const char * onFinishSlot;
     QPointer<QObject> onFinishObj;
-
-    QPointer<QThread> speechThread;
+    static QPointer<QThread> speechThread;
 };
+QPointer<QThread> QtSpeech::Private::speechThread = 0L;
 const QString QtSpeech::Private::VoiceId = QString("festival:%1");
-QList<QtSpeech::Private::Ptr> QtSpeech::Private::ptrs = QList<QtSpeech::Private::Ptr>();
 
 // implementation
 QtSpeech::QtSpeech(VoiceName n, QObject * parent)
@@ -66,17 +84,12 @@ QtSpeech::QtSpeech(VoiceName n, QObject * parent)
     if (n.id.isEmpty())
         throw InitError(Where+"No default voice in system");
 
-    int heap_size = FESTIVAL_HEAP_SIZE;
-    festival_initialize(true,heap_size);
-
     d->name = n;
-    d->ptrs << this;
 }
 
 QtSpeech::~QtSpeech()
 {
-    festival_tidy_up();
-    d->ptrs.removeAll(this);
+    //if ()
     delete d;
 }
 
@@ -98,18 +111,39 @@ void QtSpeech::tell(QString text) const {
 
 void QtSpeech::tell(QString text, QObject * obj, const char * slot) const
 {
+    if (!d->speechThread) {
+        d->speechThread = new QThread;
+        d->speechThread->start();
+    }
+
     d->onFinishObj = obj;
     d->onFinishSlot = slot;
     if (obj && slot)
         connect(const_cast<QtSpeech *>(this), SIGNAL(finished()), obj, slot);
 
-    // start async speech
+    QtSpeech_th * th = new QtSpeech_th;
+    th->moveToThread(d->speechThread);
+    connect(th, SIGNAL(finished()), this, SIGNAL(finished()), Qt::QueuedConnection);
+    connect(th, SIGNAL(finished()), th, SLOT(deleteLater()), Qt::QueuedConnection);
+    QMetaObject::invokeMethod(th, "say", Qt::QueuedConnection, Q_ARG(QString,text));
 }
 
 void QtSpeech::say(QString text) const
 {
-    EST_String est_text(text.toUtf8());
-    SysCall(festival_say_text(est_text), LogicError);
+    if (!d->speechThread) {
+        d->speechThread = new QThread;
+        d->speechThread->start();
+    }
+
+    QEventLoop el;
+    QtSpeech_th th;
+    th.moveToThread(d->speechThread);
+    connect(&th, SIGNAL(finished()), &el, SLOT(quit()), Qt::QueuedConnection);
+    QMetaObject::invokeMethod(&th, "say", Qt::QueuedConnection, Q_ARG(QString,text));
+    el.exec();
+
+    if (th.has_error)
+        throw th.err;
 }
 
 void QtSpeech::timerEvent(QTimerEvent * te)

@@ -22,6 +22,7 @@ INCLUDEPATH += $$PWD
 HEADERS += \
     QtSpeech \
     QtSpeech.h \
+    QtSpeech_unx.h \
 
 macx {
     SOURCES += QtSpeech_mac.cpp

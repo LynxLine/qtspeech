@@ -16,24 +16,34 @@
     Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301 USA */
 
-#include <QtCore>
+#ifndef QtSpeech_unx_H
+#define QtSpeech_unx_H
+
+#include <QObject>
 #include <QtSpeech>
 
-int main(int argc, char ** argv)
-{
-    QCoreApplication a(argc, argv);
-    foreach(QtSpeech::VoiceName v, QtSpeech::voices())
-        qDebug() << "id:" << v.id << "name:" << v.name;
-    
-    QtSpeech speech;
+namespace QtSpeech_v1 { // API v1.0
 
-    QString text = "Hello World!";
+class QtSpeech_th : public QObject {
+Q_OBJECT
+public:
+    QtSpeech_th(QObject * p =0L):QObject(p),has_error(false),err("") {}
+    virtual ~QtSpeech_th() {}
 
-    qDebug() << "About to say synchrounously" << text << "using voice:" << speech.name().name;
-    speech.say(text);
-    //return 0;
+public slots:
+    void say(QString text);
 
-    qDebug() << "About to say asynchrounously" << text << "using voice:" << speech.name().name;
-    speech.tell(text, &a, SLOT(quit()));
-    return a.exec();
-}
+signals:
+    void logicError(QtSpeech::LogicError);
+    void finished();
+
+private:
+    friend class QtSpeech;
+    QtSpeech::LogicError err;
+    bool has_error;
+    static bool init;
+};
+
+}; // namespace QtSpeech_v1
+#endif // QtSpeech_unx_H
+
