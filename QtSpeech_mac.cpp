@@ -44,12 +44,10 @@ namespace QtSpeech_v1 { // API v1.0
 class QtSpeech::Private {
 public:
     Private()
-        :textScript(kCFStringEncodingMacRoman),
-          isWaitingInLoop(false),
+        :isWaitingInLoop(false),
           onFinishSlot(0L) {}
 
     VoiceName name;
-    SInt16 textScript;
     SpeechChannel channel;
 
     static const QString VoiceId;
@@ -89,9 +87,6 @@ QtSpeech::QtSpeech(QObject * parent)
         QString id = d->VoiceId.arg(voice.id);
         if (id == n.id) {
             voice_ptr = &voice;
-            VoiceDescription info;
-            SysCall( GetVoiceDescription(&voice, &info, sizeof(VoiceDescription)), InitError);
-            d->textScript = info.script;
             break;
         }
     }
@@ -126,9 +121,6 @@ QtSpeech::QtSpeech(VoiceName n, QObject * parent)
         QString id = d->VoiceId.arg(voice.id);
         if (id == n.id) {
             voice_ptr = &voice;
-            VoiceDescription info;
-            SysCall( GetVoiceDescription(&voice, &info, sizeof(VoiceDescription)), InitError);
-            d->textScript = info.script;
             break;
         }
     }

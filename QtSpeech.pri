@@ -22,7 +22,6 @@ INCLUDEPATH += $$PWD
 HEADERS += \
     QtSpeech \
     QtSpeech.h \
-    QtSpeech_unx.h \
 
 macx {
     SOURCES += QtSpeech_mac.cpp
@@ -40,6 +39,7 @@ win32 {
 }
 
 unix:!mac {
+    HEADERS += QtSpeech_unx.h
     SOURCES += QtSpeech_unx.cpp
 
     INCLUDEPATH += $$PWD/festival/speech_tools/include

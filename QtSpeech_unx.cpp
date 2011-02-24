@@ -72,6 +72,16 @@ QPointer<QThread> QtSpeech::Private::speechThread = 0L;
 const QString QtSpeech::Private::VoiceId = QString("festival:%1");
 
 // implementation
+QtSpeech::QtSpeech(QObject * parent)
+    :QObject(parent), d(new Private)
+{
+    VoiceName n = {Private::VoiceId.arg("english"), "English"};
+    if (n.id.isEmpty())
+        throw InitError(Where+"No default voice in system");
+
+    d->name = n;
+}
+
 QtSpeech::QtSpeech(VoiceName n, QObject * parent)
     :QObject(parent), d(new Private)
 {
