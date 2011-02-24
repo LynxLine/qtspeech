@@ -22,6 +22,7 @@ INCLUDEPATH += $$PWD
 HEADERS += \
     QtSpeech \
     QtSpeech.h \
+    QtSpeech_unx.h \
 
 macx {
     SOURCES += QtSpeech_mac.cpp
@@ -36,4 +37,21 @@ win32 {
     INCLUDEPATH += "C:/Program Files/Microsoft Speech SDK 5.1/Include"
 
     LIBS += -L"C:/Program Files/Microsoft Speech SDK 5.1/Lib/i386"
+}
+
+unix:!mac {
+    SOURCES += QtSpeech_unx.cpp
+
+    INCLUDEPATH += $$PWD/festival/speech_tools/include
+    INCLUDEPATH += $$PWD/festival/festival/src/include
+
+    LIBS += -lncurses
+    LIBS += -L$$PWD/festival/festival/src/lib -lFestival
+    LIBS += -L$$PWD/festival/speech_tools/lib -lestools -lestbase -leststring
+
+    # Linux: use asound 
+    LIBS += -lasound
+    
+    # Mac: use system Frameworks
+    #LIBS += -framework CoreAudio -framework AudioUnit -framework AudioToolbox -framework Carbon
 }
