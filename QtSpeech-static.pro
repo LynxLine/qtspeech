@@ -18,4 +18,12 @@
 
 TEMPLATE = lib
 CONFIG += staticlib
+DEFINES += QTSPEECH_STATIC
+CONFIG(debug, debug|release) {
+    TARGET = QtSpeechd
+}
+CONFIG(release, debug|release) {
+    TARGET = QtSpeech
+}
+
 include(QtSpeech.pri)
