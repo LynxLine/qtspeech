@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Compiled Object files
 *.slo
 *.lo
@@ -10,3 +11,10 @@
 *.lai
 *.la
 *.a
+=======
+debug
+release
+Makefile
+Makefile.*
+*.user
+>>>>>>> 6ddec1ee6dbcaa4ca74a625bdc87c8ace08bb045
