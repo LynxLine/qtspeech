@@ -36,6 +36,10 @@ win32 {
     INCLUDEPATH += "C:/Program Files/Microsoft Speech SDK 5.1/Include"
 
     LIBS += -L"C:/Program Files/Microsoft Speech SDK 5.1/Lib/i386"
+
+    QMAKE_CFLAGS -= -Zc:strictStrings
+    QMAKE_CXXFLAGS -= -Zc:strictStrings
+
 }
 
 unix:!mac {
