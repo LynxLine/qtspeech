@@ -20,6 +20,7 @@ TEMPLATE = app
 CONFIG += warn_on
 CONFIG += console
 QT -= gui
+DEFINES += QTSPEECH_STATIC
 
 include(../QtSpeech.pri)
 
