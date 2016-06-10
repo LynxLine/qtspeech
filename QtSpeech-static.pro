@@ -20,9 +20,11 @@ TEMPLATE = lib
 CONFIG += staticlib
 DEFINES += QTSPEECH_STATIC
 CONFIG(debug, debug|release) {
+    DESTDIR = $$PWD/
     TARGET = QtSpeechd
 }
 CONFIG(release, debug|release) {
+    DESTDIR = $$PWD/
     TARGET = QtSpeech
 }
 
