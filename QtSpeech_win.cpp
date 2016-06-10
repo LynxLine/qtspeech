@@ -188,8 +188,12 @@ void QtSpeech::tell(QString text) const {
 
 void QtSpeech::tell(QString text, QObject * obj, const char * slot) const
 {
-    if (d->waitingFinish)
-        throw LogicError(Where+"Already waiting to finish speech");
+    if (d->waitingFinish) {
+        //throw LogicError(Where+"Already waiting to finish speech");
+        //win api to stop any existing speech going
+        HRESULT hr = d->voice->Speak( NULL, SPF_PURGEBEFORESPEAK, 0 );
+            if (FAILED( hr )) qDebug() << "sapi51: stop is not completed";
+    }
 
     d->onFinishObj = obj;
     d->onFinishSlot = slot;
